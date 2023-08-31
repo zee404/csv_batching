@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CSVController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +15,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('upload');
 });
+Route::post('/upload',[CSVController::class,'upload'])->name('upload_csv');

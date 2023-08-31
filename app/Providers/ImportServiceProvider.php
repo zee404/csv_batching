@@ -2,22 +2,25 @@
 
 namespace App\Providers;
 
+use App\Facades\CSV\CSVImport;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class ImportServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Register services.
      *
      * @return void
      */
     public function register()
     {
-    
+        $this->app->bind('CSVImport',function($app){
+            return new CSVImport();
+        });
     }
 
     /**
-     * Bootstrap any application services.
+     * Bootstrap services.
      *
      * @return void
      */
