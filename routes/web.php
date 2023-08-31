@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('upload');
-});
+Route::get('/', [CSVController::class,'index']);
 Route::post('/upload',[CSVController::class,'upload'])->name('upload_csv');
+Route::get('/batch/{id}', [CSVController::class,'batch'])->name('batch');
+

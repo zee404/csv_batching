@@ -1,63 +1,57 @@
 <?php
 
 namespace App\Facades\CSV;
+
+use App\Events\ProductCreated;
 use App\Imports\ImportCSV;
+use App\Jobs\ProductCsvProcess;
+use App\Models\Product;
 use Exception;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
-class CSVImport {
+class CSVImport
+{
 
-    public function import_csv($csvFile){
-     
-        try{
+    public function import_csv($csvFile)
+    {
+
+        try {
             $csv = fopen($csvFile, 'r');
             $import = new ImportCSV();
-           $data= Excel::toArray($import,$csvFile);
-           $data= $data[0];
-            $invalidData=collect();
-            $validatedData=collect();
-            
-        
-        //    dd($data);
-           foreach ($data as $row) {
-            $validationErrors = $this->validateRow($row);
+            $data = Excel::toArray($import, $csvFile);
 
-            if ($validationErrors) {
-                // print_r($row);
-                // dd($validationErrors);
-                // Row failed validation, add it to the invalid data collection
-                $invalidData->push([
-                    'row' => $row,
-                    'errors' => $validationErrors,
-                ]);
-            } else {
-                // Row passed validation, add it to the validated data collection
-                $validatedData->push($row);
+            $data = $data[0];
+            $chunks = array_chunk($data,100);
+            $batch= Bus::batch([])->dispatch();
+
+            foreach ($chunks as $data) {
+
+              $batch->add(new ProductCsvProcess($data));
             }
-
-
-           
-        }
-         dd($validatedData);
-        }catch(Exception $e){
+    
+            return $batch;
+        } catch (Exception $e) {
             dd($e);
         }
 
     }
 
-    public function validateRow($row){
-        $rules=[
+    public function validateRow($row)
+    {
+        $rules = [
             // 'title'=>['required'],
             // 'body_html'=>['required'],
             // 'type'=>['required'],
             // 'published'=>['required'],
 
-            'handle'=>['required',]
+            // 'handle' => ['required']
 
         ];
         $validator = Validator::make($row, $rules);
-        return $validator->fails()? $validator->errors() :null;
+        return $validator->fails() ? $validator->errors() : null;
 
     }
 }
