@@ -33,7 +33,9 @@ class SendSkuExistNotification implements ShouldQueue
         $sku = $event->sku;
 
         if(Product::where('sku',$sku)->exists()){
-            Mail::to('rz72242@gmail.com')->send(new SkuExistsNotification($sku));
+            // here write the email you want to send email too you can dynamicaly pass that to event
+            // Mail::to('rz72242@gmail.com')->send(new SkuExistsNotification($sku));
+            
         }
     }
 }
