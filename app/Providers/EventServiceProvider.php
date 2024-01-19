@@ -20,6 +20,7 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        // Register The event here
         ProductCreated::class=>[
             SendSkuExistNotification::class,
         ],
